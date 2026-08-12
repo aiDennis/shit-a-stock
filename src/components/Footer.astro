@@ -1,0 +1,39 @@
+---
+import { SITE } from "$/config";
+import { withBase } from "$/utils";
+---
+
+<footer class="footer">
+  <div class="footer__main">
+    <span>© {`${new Date().getFullYear()}`} {SITE.name}</span>
+    <span class="footer__sep">·</span>
+    <a href="https://w3h5.com" target="_blank" rel="external">w3h5.com</a>
+    <span class="footer__sep">·</span>
+    <a href={withBase('sitemap.xml')}>网站地图</a>
+  </div>
+  <p class="footer__note">本站内容仅为个人投资笔记，不构成任何投资建议 · 股市有风险，入市需谨慎</p>
+</footer>
+<style>
+  .footer {
+    padding: 2.2em 0 1.8em;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+  .footer__main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6em;
+  }
+  .footer__sep {
+    color: var(--line);
+  }
+  .footer__note {
+    margin-top: 0.6em;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+  }
+</style>

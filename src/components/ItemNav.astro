@@ -1,0 +1,31 @@
+---
+const { nav } = Astro.props;
+import { withBase } from '$/utils';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<div class="mt-5 mb-5 grid w-full gap-5 border-t-2 pt-5">
+  <div class="grid w-full grid-cols-2 justify-stretch gap-4">
+    {
+      nav.prev && nav.prev.title && (
+        <a
+          href={withBase(`blog/${nav.prev.slug}`)}
+          class="balanced subtitle line-clamp-2 block w-full text-left"
+        >
+          上一篇：{nav.prev.title}
+        </a>
+      )
+    }
+    {
+      nav.next && nav.next?.title && (
+        <a
+          href={withBase(`blog/${nav.next.slug}`)}
+          class="balanced subtitle col-start-2 line-clamp-2  block w-full text-right"
+        >
+        下一篇：{nav.next.title}
+        </a>
+      )
+    }
+  </div>
+</div>

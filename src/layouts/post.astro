@@ -1,0 +1,280 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Icon from "astro-icon";
+import {
+  SITE,
+  USE_POST_IMG_OVERLAY,
+  USE_AUTHOR_CARD,
+  USE_SUBSCRIPTION,
+} from "$/config";
+import MainLayout from "$/components/MainLayout.astro";
+import BaseHead from "$/components/BaseHead.astro";
+import Prose from "$/components/Prose.astro";
+import ItemNav from "../components/ItemNav.astro";
+import { canonicalUrl, withBase } from '$/utils';
+
+
+interface Props {
+  slug: string;
+  content: CollectionEntry<"blog">["data"];
+  nav?: any;
+}
+const { content, slug, nav } = Astro.props;
+
+// SEO：文章规范 URL + Article 结构化数据
+const pageUrl = canonicalUrl(Astro.url.pathname);
+const articleJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: content.title,
+  description: content.description,
+  datePublished: new Date(content.date).toISOString(),
+  dateModified: new Date(content.date).toISOString(),
+  mainEntityOfPage: pageUrl,
+  author: { "@type": "Person", name: content.author || SITE.author || "Author" },
+  publisher: { "@type": "Organization", name: SITE.name, url: SITE.url },
+  inLanguage: "zh-CN",
+});
+const breadcrumbJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "首页", item: SITE.url },
+    { "@type": "ListItem", position: 2, name: "笔记", item: `${SITE.url}/blog` },
+    { "@type": "ListItem", position: 3, name: content.title, item: pageUrl },
+  ],
+});
+
+const AUTHOR_NAME = content.author
+  ? content.author
+  : SITE?.author
+    ? SITE?.author
+    : "Author";
+const AUTHOR_TWITTER = content.authorTwitter
+  ? content.authorTwitter
+  : SITE?.authorTwitter
+    ? SITE?.authorTwitter
+    : "";
+const AUTHOR_AVATAR = content.authorImage
+  ? content.authorImage
+  : SITE?.authorImage
+    ? SITE?.authorImage
+    : "";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead
+      {...content}
+      permalink={pageUrl}
+      title={content.title ? `${content.title} | ${SITE.name}` : SITE.title}
+    />
+    <!-- Article + Breadcrumb 结构化数据 -->
+    <script type="application/ld+json" set:html={articleJsonLd} />
+    <script type="application/ld+json" set:html={breadcrumbJsonLd} />
+  </head>
+  <MainLayout>
+    <div class="post__header">
+      <h1 class="post__title">{content.title}</h1>
+
+      <h5 class={`post__desc ${AUTHOR_AVATAR ? "flex flex-row gap-2" : ""}`}>
+        {
+          AUTHOR_AVATAR ? (
+            <img
+              class="avatar"
+              src={AUTHOR_AVATAR}
+              alt={`${AUTHOR_NAME}'s avatar`}
+            />
+          ) : (
+            ""
+          )
+        }
+        <div class={AUTHOR_AVATAR ? "flex flex-col border-l-2 pl-2" : ""}>
+          {
+            AUTHOR_TWITTER ? (
+              <a
+                class="post__author"
+                href={`https://twitter.com/${AUTHOR_TWITTER}`}
+                title={`${AUTHOR_NAME}'s twitter`}
+                target="_blank"
+                rel="external"
+              >
+                {AUTHOR_NAME}
+              </a>
+            ) : (
+              <span class="post__author">{AUTHOR_NAME}</span>
+            )
+          }
+          {!AUTHOR_AVATAR ? " | " : ""}
+          <span class="post__date">
+            <!-- post creation/updation data -->
+            {
+              new Intl.DateTimeFormat("zh", { dateStyle: "full" }).format(
+                new Date(content.date)
+              )
+            }
+          </span>
+          <span class="post__stats">
+            <!-- | <Icon class="w-5 h-5 inline-block" pack="mdi" name="clock" /> 2 mins -->
+          </span>
+        </div>
+      </h5>
+
+      <div class="post__tags">
+        {
+          content.tags.length > 0 &&
+            content.tags.map((tag) => (
+              <a class="post__tag" href={withBase(`tags/${tag}`)} title={tag}>
+                {tag}
+              </a>
+            ))
+        }
+      </div>
+    </div>
+    {
+      content.image ? (
+        USE_POST_IMG_OVERLAY ? (
+          <>
+            <div class="img__outer">
+              <img src={content.image} alt={content.title} />
+              <div class="img_gradient" />
+            </div>
+            <br />
+          </>
+        ) : (
+          <>
+            <img class="img__outer" src={content.image} alt={content.title} />
+            <br />
+          </>
+        )
+      ) : (
+        ""
+      )
+    }
+    <Prose>
+      <slot />
+    </Prose>
+
+    <ItemNav nav={nav} />
+    <div class="post__footer mt-8">
+      {
+        USE_AUTHOR_CARD && (
+          <div class="author-card">
+            {AUTHOR_AVATAR ? (
+              <img
+                class="author-card__img avatar avatar--lg"
+                src={AUTHOR_AVATAR}
+                alt={`${AUTHOR_NAME}'s avatar`}
+              />
+            ) : (
+              ""
+            )}
+            <div class="author-card__meta">
+              <span class="author-card__author">{AUTHOR_NAME}</span>
+              {/* {
+                            AUTHOR_TWITTER ?
+                                <a class="author-card__author" href={`https://twitter.com/${AUTHOR_TWITTER}`} title={`${AUTHOR_NAME}'s twitter`} target="_blank" rel="external">{ AUTHOR_NAME }</a>
+                                :
+                                <span class="author-card__author">{ AUTHOR_NAME }</span>
+                        }
+                        <p class="author-card__bio">{ SITE.authorBio }</p>
+                        <br/>
+                        {
+                            USE_SUBSCRIPTION ?
+                            <form action="" class="subscription-form">
+                                <label for="email"></label>
+                                <input type="email" name="email" class="flex-grow border-0 text-theme-accent-gray-dark" required="true">
+                                <button type="submit">Subscribe</button>
+                            </form> :
+                            <a class="author-card__follow-btn button" target="_blank" href={`https://twitter.com/intent/follow?screen_name=${AUTHOR_TWITTER}`}><Icon class="w-5 h-5 inline-block" pack="mdi" name="twitter" /> Follow on Twitter</a>
+                        }*/}
+            </div>
+          </div>
+        )
+      }
+    </div>
+    <div class="comments mt-5 pt-5 border-t-2">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo="aiDennis/shit-a-stock"
+        data-repo-id="R_kgDOT176qg"
+        data-category="Show and tell"
+        data-category-id="DIC_kwDOT176qs4DDNdY"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="1"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+    </div>
+  </MainLayout>
+  <style>
+    .post__header {
+      @apply py-2 mb-4 text-left;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 1em;
+    }
+    .post__title {
+      @apply text-2xl font-bold;
+      color: var(--ink-darkest);
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+    }
+    .post__desc {
+      @apply flex justify-start text-left my-2;
+      color: var(--ink-faint);
+      font-size: 0.85rem;
+    }
+    .post__author {
+      color: var(--ink-soft);
+    }
+    .post__date,
+    .post__stats {
+      color: var(--ink-faint);
+      font-family: "Fira Code", monospace;
+      font-size: 0.8rem;
+      margin: 0 0.3em;
+    }
+    .post__tags {
+      @apply inline-flex gap-2 mt-3;
+    }
+    .post__tag {
+      color: var(--ink-soft);
+    }
+
+    .avatar {
+      @apply w-12 h-12 rounded-full object-cover p-1 border-2 border-solid;
+      border-color: var(--ink-soft);
+    }
+    .avatar--lg {
+      @apply w-32 h-32;
+    }
+
+    .img__outer {
+      @apply relative rounded overflow-hidden my-4;
+      border: 1px solid var(--line);
+    }
+    .img_gradient {
+      @apply absolute z-10 w-full bottom-0 left-0 h-full;
+      background: linear-gradient(to top right, var(--ink), transparent);
+    }
+
+    .author-card {
+      @apply flex flex-row gap-4 justify-start text-left;
+      color: var(--ink-soft);
+    }
+    .author-card__meta {
+      @apply border-l pl-4;
+      border-color: var(--line);
+    }
+    .author-card__author {
+      @apply text-xl mb-1;
+      color: var(--ink-darkest);
+    }
+  </style>
+</html>

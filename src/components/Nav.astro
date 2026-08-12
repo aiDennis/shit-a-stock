@@ -1,0 +1,40 @@
+---
+import { withBase } from '$/utils'
+import { NAV_ITEMS } from '$/config'
+---
+<nav class="nav py-3">
+    <ul class="nav-list">
+         {
+            Object.keys(NAV_ITEMS).map(navItemKey => {
+                const raw = NAV_ITEMS[navItemKey].path;
+                const path = raw === '/' ? withBase('') : withBase(raw.slice(1));
+                const isActive = Astro.url.pathname === raw || (raw !== '/' && Astro.url.pathname.startsWith(raw));
+                return <li>
+                <a class:list={[
+                    'nav-link',
+                    isActive ? 'nav-link--active' : ''
+                ]} href={path} title={NAV_ITEMS[navItemKey].title}>{NAV_ITEMS[navItemKey].title}</a>
+            </li>
+            })
+        }
+    </ul>
+</nav>
+<style>
+    .nav-list {
+        display: inline-flex;
+        list-style: none;
+        gap: 1.2em;
+        padding: 0.5em 0;
+        flex-wrap: wrap;
+    }
+    .nav-link {
+        padding-bottom: 0.25rem;
+        border-bottom: 2px solid transparent;
+        font-size: 0.95rem;
+        letter-spacing: 0.05em;
+    }
+    .nav-link--active {
+        border-color: var(--ink-darkest);
+        color: var(--ink-darkest);
+    }
+</style>

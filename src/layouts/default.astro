@@ -1,0 +1,35 @@
+---
+import { SITE } from '$/config'
+import BaseHead from '$/components/BaseHead.astro';
+import MainLayout from '$/components/MainLayout.astro';
+import { canonicalUrl } from '$/utils';
+
+const { content, showPageHeader = true } = Astro.props
+const pageUrl = canonicalUrl(Astro.url.pathname)
+---
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <BaseHead permalink={pageUrl} title={ content.title ? `${content.title} | ${ SITE.name }` : SITE.title } description={ content.description } image={SITE.image}/>
+    </head>
+    <MainLayout>
+        {showPageHeader &&
+            <div class="page__header">
+                <h1 class="page__title">{content.title}</h1>
+                <h5 class="page__desc">{content.description}</h5>
+            </div>
+        }
+        <slot />
+    </MainLayout>
+</html>
+<style>
+    .page__header {
+        @apply py-4 mb-5
+    }
+    .page__title {
+        @apply text-3xl font-extrabold text-theme-primary dark:text-theme-dark-primary mb-1
+    }
+    .page__desc {
+        @apply text-gray-400
+    }
+</style>

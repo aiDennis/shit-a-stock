@@ -1,0 +1,50 @@
+---
+export const prerender = true;
+import { getArchiveNav } from "$/utils/helpers";
+import { getEntryBySlug, getCollection, CollectionEntry } from "astro:content";
+import PostLayout from "$/layouts/post.astro";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog");
+  const count = allPosts.length;
+  return allPosts.map((post, index) => {
+    let next: CollectionEntry<"blog"> | null = null;
+    let prev: CollectionEntry<"blog"> | null = null;
+    const archiveNav = getArchiveNav(count, index, allPosts);
+    next = archiveNav.next;
+    prev = archiveNav.prev;
+    return {
+      params: {
+        slug: post.slug,
+      },
+      props: {
+        data: {
+          ...post.data,
+          nav: {
+            next: {
+              slug: next?.slug,
+              title: next?.data?.title,
+            },
+            prev: {
+              slug: prev?.slug,
+              title: prev?.data?.title,
+            },
+            index: index,
+          },
+        },
+      },
+    };
+  });
+}
+
+const { slug } = Astro.params;
+const {
+  data: { nav },
+} = Astro.props;
+const entry = await getEntryBySlug("blog", slug!);
+const { Content } = await entry.render();
+---
+
+<PostLayout slug={slug} content={entry.data} nav={nav}>
+  <Content />
+</PostLayout>

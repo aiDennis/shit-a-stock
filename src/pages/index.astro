@@ -1,0 +1,27 @@
+---
+export const prerender = true
+
+import { getCollection } from 'astro:content'
+import DefaultPageLayout from '$/layouts/default.astro'
+import PostPreviewList from '$/components/PostPreviewList.astro'
+import { withBase } from '$/utils';
+import { PAGE_SIZE } from '$/config';
+
+const title = 'Home'
+const description = 'A 股日记 · 每日复盘'
+
+const allPosts = await getCollection('blog')
+const posts = allPosts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date)).slice(0, PAGE_SIZE);
+---
+<DefaultPageLayout content={{ title, description }} showPageHeader={false}>
+    <PostPreviewList posts={posts} />
+    <div class="page__actions">
+        <a class="action__go-to-blog" href={withBase("blog")} title="全部文章">全部文章 &rarr;</a>
+    </div>
+</DefaultPageLayout>
+
+<style>
+    .page__actions {
+        @apply flex justify-center md:justify-end py-6
+    }
+</style>

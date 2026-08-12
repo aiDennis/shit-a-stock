@@ -1,0 +1,20 @@
+---
+title: '关于'
+description: 'A股笔记 —— 每个交易日收盘后的市场复盘'
+---
+import DefaultPageLayout from '$/layouts/default.astro'
+import Prose from '$/components/Prose.astro'
+
+<DefaultPageLayout content={{ title: frontmatter.title, description: frontmatter.description }}>
+    <Prose>
+
+每天收盘后，把当天的市场走势、资金动向、热点板块记一笔。
+
+不是为了预测，只是为了记录——日积月累，回过头来看，或许能看出些门道。
+
+**数据来源**：腾讯行情、同花顺、东方财富（公开 HTTP API）。
+
+**免责声明**：本站内容仅为个人笔记，不构成任何投资建议。股市有风险，入市需谨慎。
+
+    </Prose>
+</DefaultPageLayout>
