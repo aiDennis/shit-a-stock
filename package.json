@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "predev": "node ./scripts/search/prepare-index.js",
     "build": "astro check && astro build",
     "check": "astro check",
     "postbuild": "node ./scripts/search/prepare-index.js && node ./scripts/generate-sitemap.mjs",

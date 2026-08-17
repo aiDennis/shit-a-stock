@@ -3,44 +3,61 @@
         slug: string
         title: string
         description: string
-        category: string,
+        category: string
         tags: Array<string>
     }
     export let post: Props
     export let isLast: boolean = false
+
+    /**
+     * @param {string} pathname
+     * @returns {string}
+     */
+    const withBase = (pathname: string) => {
+        const base = import.meta.env.BASE_URL || '/'
+        const prefix = base.endsWith('/') ? base : `${base}/`
+        return prefix + pathname.replace(/^\//, '')
+    }
 </script>
-<div class="post-preview hover:bg-theme-primary">
-    <div class="flex-1">
-        <h4 class="post-preview__title">
-            <a href={`/${post.category}/${post.slug}`} title={post.title}>{post.title} &rarr;</a>
-        </h4>
-        <p class="post-preview__desc">
-            {post.description}
-        </p>
-        <ul class="tag-list">
-            {#each post.tags as tag}
-                <a class="tag" href={`/tags/${tag}`} title={tag}>{tag}</a>
-            {/each}
-        </ul>
-    </div>
-</div>
-{#if !isLast}
-    <hr class="my-4 text-theme-dark-secondary"/>
-{/if}
+<a class="post-preview" class:is-last={isLast} href={withBase(`${post.category}/${post.slug}`)} title={post.title}>
+    <span class="post-preview__title">{post.title}</span>
+    {#if post.description}
+        <span class="post-preview__desc">{post.description}</span>
+    {/if}
+</a>
 <style lang="postcss">
     .post-preview {
-        @apply  flex gap-6 text-left;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        text-align: left;
+        padding: 0.4rem 0.45rem;
+        border-bottom: 1px solid var(--line-soft);
+        color: inherit;
+        background-image: none;
+    }
+    .post-preview.is-last {
+        border-bottom: 0;
+    }
+    .post-preview:hover {
+        background: var(--paper);
+        background-image: none;
     }
     .post-preview__title {
-        @apply text-lg leading-tight font-semibold text-white mb-2;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        font-weight: 600;
+        color: var(--ink-darkest);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .post-preview__desc {
-        @apply text-base text-theme-dark-primary leading-5 line-clamp-2;
-    }
-    .tag-list {
-        @apply list-none py-2 flex flex-wrap gap-2;
-    }
-    .tag {
-        @apply inline-block text-xs px-4 py-1 rounded-full text-theme-primary bg-theme-dark-primary;
+        font-size: 0.78rem;
+        color: var(--ink-faint);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>

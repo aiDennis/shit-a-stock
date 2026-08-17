@@ -4,29 +4,47 @@
     import Search from './Search.svelte'
 
     const dismissModal = () => isSearchVisible.set(false)
-    const handleEsc = (event) => {
+    const handleEsc = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-			dismissModal()
-		}
+            dismissModal()
+        }
     }
-
 </script>
 {#if $isSearchVisible}
-    <div class="modal__backdrop" role="button" tabindex="0" on:click={dismissModal} on:keydown={handleEsc} transition:fade></div>
-    <div class="modal" role="dialog">
-        <div class="modal__cnt" transition:fly="{{ y: 200, duration: 300 }}">
+    <div
+        class="modal__backdrop"
+        role="button"
+        tabindex="0"
+        on:click={dismissModal}
+        on:keydown={handleEsc}
+        transition:fade
+    ></div>
+    <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal__cnt" transition:fly={{ y: 80, duration: 220 }}>
             <Search />
         </div>
     </div>
 {/if}
 <style>
     .modal {
-        @apply absolute top-0 left-0 w-full h-full grid justify-center content-center pointer-events-none;
+        position: fixed;
+        inset: 0;
+        display: grid;
+        justify-content: center;
+        align-content: start;
+        padding-top: 6vh;
+        pointer-events: none;
+        z-index: 50;
     }
     .modal__backdrop {
-        @apply absolute top-0 left-0 w-full h-screen opacity-50 bg-gradient-to-tr from-fuchsia-600 to-fuchsia-900 z-0;
+        position: fixed;
+        inset: 0;
+        opacity: 0.45;
+        background: #1c1a17;
+        z-index: 40;
     }
     .modal__cnt {
-        @apply w-full z-10 pointer-events-auto;
+        z-index: 50;
+        pointer-events: auto;
     }
 </style>
