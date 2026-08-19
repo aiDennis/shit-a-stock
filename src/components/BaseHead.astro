@@ -9,9 +9,10 @@ export type Props = {
   description: string;
   permalink: string;
   image: string;
+  noindex?: boolean;
 };
 
-const { title = SITE.title, description, permalink, image } = Astro.props;
+const { title = SITE.title, description, permalink, image, noindex = false } = Astro.props;
 const orgJsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -34,6 +35,9 @@ const orgJsonLd = JSON.stringify({
 
 <!-- Canonical：规范 URL（指向最终域名，去掉 base 前缀） -->
 {permalink && <link rel="canonical" href={permalink} />}
+
+<!-- Robots：低价值页（分页/标签/草稿）不编入索引，但保留内链传递 -->
+{noindex && <meta name="robots" content="noindex, follow" />}
 
 <link rel="apple-touch-icon" sizes="180x180" href={withBase("apple-touch-icon.png")} />
 <link rel="icon" type="image/png" sizes="32x32" href={withBase("favicon-32x32.png")} />

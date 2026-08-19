@@ -14,7 +14,7 @@ const allPosts = await getCollection('blog');
 const tags = [...new Set([].concat.apply([], allPosts.map(post => post.data.tags)))]
 ---
 
-<DefaultPageLayout content={{ title, description }}>
+<DefaultPageLayout content={{ title, description }} noindex>
     <ul class="tag-list">
      {tags.map((tag) => (
         <li><a class="tag" href={withBase(`tags/${tag}`)} title={`View posts tagged under "${tag}"`}>{tag}</a></li>

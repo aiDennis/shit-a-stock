@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /drafts/
+Disallow: /admin/
 
 Sitemap: https://stock.955.life/sitemap.xml

@@ -22,7 +22,7 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props
 
 ---
-<DefaultPageLayout content={{ title, description }}>
+<DefaultPageLayout content={{ title, description }} noindex={page.currentPage > 1}>
     <PostPreviewList posts={page.data} />
     <Paginator page={page} />
 </DefaultPageLayout>
